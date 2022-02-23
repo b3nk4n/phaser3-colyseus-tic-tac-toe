@@ -113,7 +113,7 @@ This template uses a basic `typescript-eslint` set up for code linting.
 
 It does not aim to be opinionated.
 
-## Dev Server Port
+## Dev RoomClient Port
 
 You can change the dev server's port number by modifying the `start` script in `package.json`. We use Parcel's `-p` option to specify the port number.
 

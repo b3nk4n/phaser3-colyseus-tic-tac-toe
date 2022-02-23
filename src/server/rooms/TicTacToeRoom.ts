@@ -1,17 +1,17 @@
-import {Client, Room} from "colyseus";
-import {MyRoomState} from "./schema/MyRoomState";
+import {Client, Room} from 'colyseus'
 
-export class MyRoom extends Room<MyRoomState> {
+import TicTacToeState from './schema/TicTacToeState';
 
-    onCreate(options: any) {
-        this.setState(new MyRoomState());
+export class TicTacToeRoom extends Room<TicTacToeState> {
+    onCreate() {
+        console.log('room created')
+        this.setState(new TicTacToeState())
 
         this.onMessage("keydown-msg", (client: Client, message) => {
             this.broadcast('keydown-msg', message, {
                 except: client // except the sending client itself
             })
         });
-
     }
 
     onJoin(client: Client, options: any) {
@@ -25,5 +25,4 @@ export class MyRoom extends Room<MyRoomState> {
     onDispose() {
         console.log("room", this.roomId, "disposing...");
     }
-
 }

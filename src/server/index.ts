@@ -1,11 +1,11 @@
 // Colyseus + Express
-import { Server } from "colyseus";
-import { createServer } from "http";
+import { Server } from 'colyseus';
+import { createServer } from 'http';
 import cors from 'cors';
-import express from "express";
+import express from 'express';
 import { monitor } from '@colyseus/monitor';
 
-import { TicTacToeRoom } from "./rooms/TicTacToeRoom";
+import { TicTacToeRoom } from './rooms/TicTacToeRoom';
 
 const port = Number(process.env.port) || 3000;
 

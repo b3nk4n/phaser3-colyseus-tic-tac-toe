@@ -35,8 +35,9 @@
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
+		"@colyseus/command": "^0.2.1",
 		"@colyseus/monitor": "^0.14.20",
-		"colyseus": "^0.14.20",
+		"colyseus": "^0.14.23",
 		"colyseus.js": "^0.14.13",
 		"cors": "^2.8.5",
 		"express": "^4.16.4",

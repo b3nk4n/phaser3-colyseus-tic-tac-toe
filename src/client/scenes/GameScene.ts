@@ -1,18 +1,23 @@
 import Phaser from 'phaser'
 
 import type RoomClient from '../services/RoomClient'
-import ITicTacToeState from '~/types/ITicTacToeState'
+import ITicTacToeState, { GameState } from '../../types/ITicTacToeState'
+import { IGameOverSceneData, IGameSceneData } from '../../types/scenes'
 import { CellValue } from '../../types/ITicTacToeState'
 
 export default class GameScene extends Phaser.Scene {
+    public static readonly KEY = 'game'
+
     private roomClient?: RoomClient
+    private onGameOver?: (data: IGameOverSceneData) => void
     private cells?: {
         display: Phaser.GameObjects.Rectangle,
         value: CellValue
     }[]
+    private infoText?: Phaser.GameObjects.Text
 
     constructor() {
-        super('game')
+        super(GameScene.KEY)
     }
 
     // scenes are reused by Phaser, and init is called each time when a scene starts
@@ -20,10 +25,11 @@ export default class GameScene extends Phaser.Scene {
         this.cells = []
     }
 
-    async create(data: { roomClient: RoomClient }) {
+    async create(data: IGameSceneData) {
         console.log('game scene')
 
         this.roomClient = data.roomClient
+        this.onGameOver = data.onGameOver
 
         if (!this.roomClient) {
             throw new Error('Server connection is not available')
@@ -69,12 +75,20 @@ export default class GameScene extends Phaser.Scene {
             this.cells?.push({ display: cellRect, value: cellValue})
         })
 
+        if (this.roomClient?.gameState === GameState.WaitingForPlayer) {
+            this.infoText = this.add.text(width / 2, 32, 'Waiting for player...')
+                .setOrigin(0.5)
+        }
+
         this.roomClient?.onBoardChanged(this.handleBoardChanged, this)
         this.roomClient?.onPlayerTurnChanged(this.handlePlayerTurnChanged, this)
         this.roomClient?.onPlayerWin(this.handlePlayerWin, this)
+        this.roomClient?.onGameStateChanged(this.handleGameStateChanged, this)
     }
 
     private handleBoardChanged(newCellValue: CellValue, idx: number): void {
+        if (!this.cells) return
+
         const cell = this.cells[idx]
         if (cell.value !== newCellValue) {
             this.renderCell(cell.display.x, cell.display.y, newCellValue)
@@ -96,10 +110,20 @@ export default class GameScene extends Phaser.Scene {
     }
 
     private handlePlayerWin(playerIdx: number): void {
-        if (this.roomClient?.playerIndex === playerIdx) {
-            console.log('Congratulations!')
-        } else {
-            console.log('Game over!')
+        this.time.delayedCall(1000, () => {
+            if (!this.onGameOver) {
+                return
+            }
+
+            const winner = this.roomClient?.playerIndex === playerIdx
+            this.onGameOver({ winner })
+        })
+    }
+
+    private handleGameStateChanged(gameState: GameState) {
+        if (this.infoText && gameState === GameState.Playing) {
+            this.infoText.destroy()
+            this.infoText = undefined
         }
     }
 }

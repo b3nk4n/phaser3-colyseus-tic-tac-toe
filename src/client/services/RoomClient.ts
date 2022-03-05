@@ -1,7 +1,7 @@
 import { Client, Room } from 'colyseus.js'
 import Phaser from 'phaser'
 
-import ITicTacToeState, { CellValue } from '../../types/ITicTacToeState'
+import ITicTacToeState, { CellValue, GameState } from '../../types/ITicTacToeState'
 import { Message } from '../../types/messages'
 
 export default class RoomClient {
@@ -9,12 +9,14 @@ export default class RoomClient {
     private static readonly EVENT_BOARD_CHANGED: string = 'board-changed'
     private static readonly EVENT_PLAYER_TURN_CHANGED: string = 'player-turn-changed'
     private static readonly EVENT_PLAYER_WIN: string = 'player-win'
+    private static readonly EVENT_GAME_STATE_CHANGED: string = 'game-state-changed'
 
     private readonly client: Client
     private readonly events: Phaser.Events.EventEmitter
     private room?: Room<ITicTacToeState>
-    private removeActivePlayerListener: Function = () => {}
-    private removePlayerWinListener: Function = () => {}
+    private removeActivePlayerListener: () => void = () => {}
+    private removePlayerWinListener: () => void = () => {}
+    private removeGameStateListener: () => void = () => {}
 
     private _playerIndex: number = -1
 
@@ -28,7 +30,6 @@ export default class RoomClient {
         this.room = await this.client.joinOrCreate('tic-tac-toe')
 
         this.room.onMessage(Message.PlayerIndex, (message: { playerIdx: number }) => {
-            // TODO Video 4 - 13:00
             this._playerIndex = message.playerIdx
         })
 
@@ -46,21 +47,25 @@ export default class RoomClient {
         })
 
         this.removePlayerWinListener = this.room.state.listen('winningPlayer', (newValue, _) => {
-            console.log('WINNING-PLAYER ' + newValue)
             this.events.emit(RoomClient.EVENT_PLAYER_WIN, newValue)
+        })
+
+        this.removeGameStateListener = this.room.state.listen('gameState', (newValue, _) => {
+            this.events.emit(RoomClient.EVENT_GAME_STATE_CHANGED, newValue)
         })
 
         return this.room
     }
 
-    makeSelection(cellIndex: number) {
-        if (!this.room) {
-            return
-        }
+    leave() {
+        this.room?.leave()
+        this.events.removeAllListeners()
+    }
 
-        console.log({playerIndex: this.playerIndex, activePlayer: this.room.state.activePlayer})
-        if (this.playerIndex !== this.room.state.activePlayer) {
-            console.warn('Not this player\'s turn!')
+    makeSelection(cellIndex: number) {
+        if (!this.room
+            || this.playerIndex !== this.room.state.activePlayer
+            || this.room.state.gameState !== GameState.Playing) {
             return
         }
 
@@ -83,12 +88,24 @@ export default class RoomClient {
         this.events.on(RoomClient.EVENT_PLAYER_WIN, callback, context)
     }
 
+    onGameStateChanged(callback: (gameState: GameState) => void, context?: any) {
+        this.events.on(RoomClient.EVENT_GAME_STATE_CHANGED, callback, context)
+    }
+
     dispose(): void {
         this.removeActivePlayerListener()
         this.removePlayerWinListener()
+        this.removeGameStateListener()
     }
 
     get playerIndex(): number {
         return this._playerIndex
+    }
+
+    get gameState(): GameState {
+        if (!this.room) {
+            return GameState.WaitingForPlayer
+        }
+        return this.room.state.gameState
     }
 }

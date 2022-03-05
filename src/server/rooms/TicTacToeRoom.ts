@@ -1,10 +1,11 @@
-import { Client, Room } from 'colyseus'
-import { Dispatcher } from '@colyseus/command'
+import {Client, Room} from 'colyseus'
+import {Dispatcher} from '@colyseus/command'
 
 import TicTacToeState from './schema/TicTacToeState'
 import { Message } from '../../types/messages'
 import PlayerSelectionCommand from '../commands/PlayerSelectionCommand'
 import CheckWinnerCommand from '../commands/CheckWinnerCommand'
+import { GameState } from '../../types/ITicTacToeState'
 
 export class TicTacToeRoom extends Room<TicTacToeState> {
     private dispatcher = new Dispatcher(this)
@@ -30,6 +31,7 @@ export class TicTacToeRoom extends Room<TicTacToeState> {
         client.send(Message.PlayerIndex, { playerIdx })
 
         if (this.clients.length >= 2) {
+            this.state.gameState = GameState.Playing
             this.lock()
         }
     }

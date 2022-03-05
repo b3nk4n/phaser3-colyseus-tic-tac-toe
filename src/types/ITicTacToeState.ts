@@ -6,10 +6,17 @@ export enum CellValue {
     O
 }
 
-export interface ITicTacToeState extends Schema {
-    board: ArraySchema<CellValue>
+export enum GameState {
+    WaitingForPlayer,
+    Playing,
+    GameOver
+}
 
+export interface ITicTacToeState extends Schema {
     activePlayer: number
+    winningPlayer: number
+    gameState: GameState
+    board: ArraySchema<CellValue>
 }
 
 export default ITicTacToeState

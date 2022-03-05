@@ -1,12 +1,17 @@
 import Phaser from 'phaser'
 
 import RoomClient from '../services/RoomClient'
+import { IGameOverSceneData } from '../../types/scenes'
+import GameScene from '../../client/scenes/GameScene'
+import GameOverScene from '../../client/scenes/GameOverScene'
 
 export default class BoostrapScene extends Phaser.Scene {
+    private static readonly KEY = 'bootstrap'
+
     private roomClient!: RoomClient
 
     constructor() {
-        super('bootstrap')
+        super(BoostrapScene.KEY)
     }
 
     init() {
@@ -14,9 +19,27 @@ export default class BoostrapScene extends Phaser.Scene {
     }
 
     create() {
-        console.log('bootstrap scene')
-        this.scene.launch('game', {
-            roomClient: this.roomClient
+        this.createNewGame()
+    }
+
+    private createNewGame() {
+        this.scene.launch(GameScene.KEY, {
+            roomClient: this.roomClient,
+            onGameOver: this.onGameOver.bind(this)
         })
+    }
+
+    onGameOver(data: IGameOverSceneData) {
+        this.roomClient.leave()
+        this.scene.stop(GameScene.KEY)
+        this.scene.launch(GameOverScene.KEY, {
+            ...data,
+            onRestart: this.onRestart
+        })
+    }
+
+    private onRestart = () => {
+        this.scene.stop(GameOverScene.KEY)
+        this.createNewGame()
     }
 }

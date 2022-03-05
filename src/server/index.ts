@@ -1,4 +1,3 @@
-// Colyseus + Express
 import { Server } from 'colyseus'
 import { createServer } from 'http'
 import cors from 'cors'
@@ -23,4 +22,5 @@ gameServer.define('tic-tac-toe', TicTacToeRoom)
 app.use('/colyseus', monitor())
 
 gameServer.listen(port)
-console.log(`Listening on ws://localhost:${port}`)
+console.log(`Websocket on ws://localhost:${port}`)
+console.log(`Colyseus Monitor on http://localhost:${port}/colyseus/`)

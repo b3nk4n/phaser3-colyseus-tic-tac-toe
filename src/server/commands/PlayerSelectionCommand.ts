@@ -17,15 +17,15 @@ export default class PlayerSelectionCommand extends Command<TicTacToeRoom, Paylo
             return
         }
 
-        const clientIndex = this.room.clients.findIndex(c => c.id === client.id)
-        if (clientIndex != this.room.state.activePlayer) {
+        const playerIndex = this.room.clients.findIndex(c => c.id === client.id)
+        if (playerIndex != this.room.state.activePlayer) {
             return
         }
 
         const oldCellValue = this.room.state.board[cellIndex]
 
         if (oldCellValue === CellValue.Empty) {
-            const newCellValue = clientIndex === 0 ? CellValue.X : CellValue.O
+            const newCellValue = playerIndex === 0 ? CellValue.X : CellValue.O
             this.room.state.board[cellIndex] = newCellValue
         }
     }

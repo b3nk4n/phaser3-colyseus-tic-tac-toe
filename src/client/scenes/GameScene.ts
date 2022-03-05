@@ -26,8 +26,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     async create(data: IGameSceneData) {
-        console.log('game scene')
-
         this.roomClient = data.roomClient
         this.onGameOver = data.onGameOver
 
@@ -35,18 +33,9 @@ export default class GameScene extends Phaser.Scene {
             throw new Error('Server connection is not available')
         }
 
-        const room = await this.roomClient.join()
+        this.roomClient.join()
 
         this.roomClient.onStateInitialized(this.createBoard, this)
-
-        // from previous game setup tutorial
-        room.onMessage('keydown-msg', (message) => {
-            console.log({message})
-        })
-
-        this.input.keyboard.on('keydown', (e: KeyboardEvent) => {
-            room.send('keydown-msg', e.key)
-        })
     }
 
     private createBoard(state: ITicTacToeState) {
@@ -77,6 +66,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.infoText = this.add.text(width / 2, 32, '')
             .setOrigin(0.5)
+        this.handleGameStateChanged(state.gameState)
 
         this.roomClient?.onBoardChanged(this.handleBoardChanged, this)
         this.roomClient?.onPlayerTurnChanged(this.handlePlayerTurnChanged, this)
@@ -107,19 +97,19 @@ export default class GameScene extends Phaser.Scene {
         if (!this.infoText) return
 
         if (this.roomClient?.hasTurn) {
-            this.infoText.setText('Your turn.').setVisible(true)
+            this.infoText.setText('Your turn').setVisible(true)
         } else {
             this.infoText.setText('').setVisible(false)
         }
     }
 
-    private handlePlayerWin(playerIdx: number): void {
+    private handlePlayerWin(playerIndex: number): void {
         this.time.delayedCall(1000, () => {
             if (!this.onGameOver) {
                 return
             }
 
-            const winner = this.roomClient?.playerIndex === playerIdx
+            const winner = this.roomClient?.playerIndex === playerIndex
             this.onGameOver({ winner })
         })
     }

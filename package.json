@@ -1,21 +1,21 @@
 {
-	"name": "phaser3-parcel-template",
+	"name": "phaser3-colyseus-tic-tac-toe",
 	"version": "1.0.0",
-	"description": "A typescript template project for Phaser 3 using Parceljs",
+	"description": "A typescript based Phaser 3 multiplayer Tic Tac Toe game using Colyseus",
 	"scripts": {
-		"start": "parcel src/client/index.html -p 8000",
-		"start-server": "ts-node-dev --respawn --transpile-only --project tsconfig.server.json src/server/index.ts",
+		"client": "parcel src/client/index.html -p 8000",
+		"server": "ts-node-dev --respawn --transpile-only --project tsconfig.server.json src/server/index.ts",
 		"build": "parcel build src/client/index.html --out-dir dist",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
 	},
-	"author": "supertommy",
+	"author": "Benjamin Kan",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ourcade/phaser3-parcel-template.git"
+		"url": "https://github.com/b3nk4n/phaser3-colyseus-tic-tac-toe.git"
 	},
-	"homepage": "https://github.com/ourcade/phaser3-parcel-template",
+	"homepage": "https://github.com/b3nk4n/phaser3-colyseus-tic-tac-toe",
 	"devDependencies": {
 		"@colyseus/testing": "^0.14.21",
 		"@types/cors": "^2.8.6",

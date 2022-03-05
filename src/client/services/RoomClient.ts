@@ -22,19 +22,17 @@ export default class RoomClient {
 
     constructor() {
         this.client = new Client('ws://localhost:3000')
-        console.log({client: this.client})
         this.events = new Phaser.Events.EventEmitter()
     }
 
-    async join() : Promise<Room> {
+    async join() : Promise<void> {
         this.room = await this.client.joinOrCreate('tic-tac-toe')
 
-        this.room.onMessage(Message.PlayerIndex, (message: { playerIdx: number }) => {
-            this._playerIndex = message.playerIdx
+        this.room.onMessage(Message.PlayerIndex, (message: { playerIndex: number }) => {
+            this._playerIndex = message.playerIndex
         })
 
         this.room.onStateChange.once(state => {
-            console.log({initialState: state})
             this.events.emit(RoomClient.EVENT_STATE_INIT, state)
         })
 
@@ -53,8 +51,6 @@ export default class RoomClient {
         this.removeGameStateListener = this.room.state.listen('gameState', (newValue, _) => {
             this.events.emit(RoomClient.EVENT_GAME_STATE_CHANGED, newValue)
         })
-
-        return this.room
     }
 
     leave() {
@@ -80,11 +76,11 @@ export default class RoomClient {
         this.events.on(RoomClient.EVENT_BOARD_CHANGED, callback, context)
     }
 
-    onPlayerTurnChanged(callback: (newPlayerIdx: number, oldPlayerIdx: number) => void, context?: any) {
+    onPlayerTurnChanged(callback: (newPlayerIndex: number, oldPlayerIndex: number) => void, context?: any) {
         this.events.on(RoomClient.EVENT_PLAYER_TURN_CHANGED, callback, context)
     }
 
-    onPlayerWin(callback: (playerIdx: number) => void, context?: any) {
+    onPlayerWin(callback: (playerIndex: number) => void, context?: any) {
         this.events.on(RoomClient.EVENT_PLAYER_WIN, callback, context)
     }
 
@@ -103,7 +99,6 @@ export default class RoomClient {
     }
 
     get hasTurn(): boolean {
-        console.log({playerIdx: this.playerIndex, activePlayer: this.room?.state.activePlayer})
         return this._playerIndex === this.room?.state.activePlayer
     }
 

@@ -27,8 +27,8 @@ export class TicTacToeRoom extends Room<TicTacToeState> {
     onJoin(client: Client, options: any, auth: any) {
         console.log(client.sessionId, "joined!")
 
-        const playerIdx = this.clients.findIndex(c => c.sessionId === client.sessionId)
-        client.send(Message.PlayerIndex, { playerIdx })
+        const playerIndex = this.clients.findIndex(c => c.sessionId === client.sessionId)
+        client.send(Message.PlayerIndex, { playerIndex })
 
         if (this.clients.length >= 2) {
             this.state.gameState = GameState.Playing

@@ -75,10 +75,8 @@ export default class GameScene extends Phaser.Scene {
             this.cells?.push({ display: cellRect, value: cellValue})
         })
 
-        if (this.roomClient?.gameState === GameState.WaitingForPlayer) {
-            this.infoText = this.add.text(width / 2, 32, 'Waiting for player...')
-                .setOrigin(0.5)
-        }
+        this.infoText = this.add.text(width / 2, 32, '')
+            .setOrigin(0.5)
 
         this.roomClient?.onBoardChanged(this.handleBoardChanged, this)
         this.roomClient?.onPlayerTurnChanged(this.handlePlayerTurnChanged, this)
@@ -105,8 +103,14 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
-    private handlePlayerTurnChanged(newPlayerIdx: number, oldPlayerIdx: number): void {
-        // TODO show message to player to indicate it is his turn
+    private handlePlayerTurnChanged(): void {
+        if (!this.infoText) return
+
+        if (this.roomClient?.hasTurn) {
+            this.infoText.setText('Your turn.').setVisible(true)
+        } else {
+            this.infoText.setText('').setVisible(false)
+        }
     }
 
     private handlePlayerWin(playerIdx: number): void {
@@ -121,9 +125,12 @@ export default class GameScene extends Phaser.Scene {
     }
 
     private handleGameStateChanged(gameState: GameState) {
-        if (this.infoText && gameState === GameState.Playing) {
-            this.infoText.destroy()
-            this.infoText = undefined
+        if (!this.infoText) return
+
+        if (gameState === GameState.WaitingForPlayer) {
+            this.infoText.setText('Waiting for player...').setVisible(true)
+        } else if (gameState === GameState.Playing) {
+            this.handlePlayerTurnChanged()
         }
     }
 }

@@ -102,6 +102,11 @@ export default class RoomClient {
         return this._playerIndex
     }
 
+    get hasTurn(): boolean {
+        console.log({playerIdx: this.playerIndex, activePlayer: this.room?.state.activePlayer})
+        return this._playerIndex === this.room?.state.activePlayer
+    }
+
     get gameState(): GameState {
         if (!this.room) {
             return GameState.WaitingForPlayer

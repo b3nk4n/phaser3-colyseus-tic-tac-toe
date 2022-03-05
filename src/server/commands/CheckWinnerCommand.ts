@@ -13,7 +13,6 @@ export default class CheckWinnerCommand extends Command<TicTacToeRoom, Payload> 
         const win = this.checkForWinner()
 
         if (win) {
-            // TODO set winnerPlayer on state
             const activePlayer = this.room.state.activePlayer
             console.log(`Player ${ activePlayer } wins.`)
             this.room.state.winningPlayer = activePlayer

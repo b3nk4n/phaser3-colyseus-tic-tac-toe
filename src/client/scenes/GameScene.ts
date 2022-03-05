@@ -1,8 +1,8 @@
-import Phaser from 'phaser';
+import Phaser from 'phaser'
 
-import type RoomClient from '../services/RoomClient';
-import ITicTacToeState from '~/types/ITicTacToeState';
-import { CellValue } from '../../types/ITicTacToeState';
+import type RoomClient from '../services/RoomClient'
+import ITicTacToeState from '~/types/ITicTacToeState'
+import { CellValue } from '../../types/ITicTacToeState'
 
 export default class GameScene extends Phaser.Scene {
     private roomClient?: RoomClient
@@ -12,7 +12,7 @@ export default class GameScene extends Phaser.Scene {
     }[]
 
     constructor() {
-        super('game');
+        super('game')
     }
 
     // scenes are reused by Phaser, and init is called each time when a scene starts
@@ -20,11 +20,10 @@ export default class GameScene extends Phaser.Scene {
         this.cells = []
     }
 
-
     async create(data: { roomClient: RoomClient }) {
         console.log('game scene')
 
-        this.roomClient = data.roomClient;
+        this.roomClient = data.roomClient
 
         if (!this.roomClient) {
             throw new Error('Server connection is not available')
@@ -71,22 +70,36 @@ export default class GameScene extends Phaser.Scene {
         })
 
         this.roomClient?.onBoardChanged(this.handleBoardChanged, this)
+        this.roomClient?.onPlayerTurnChanged(this.handlePlayerTurnChanged, this)
+        this.roomClient?.onPlayerWin(this.handlePlayerWin, this)
     }
 
-    private handleBoardChanged(newCellValue: CellValue, idx: number) {
-        const cell = this.cells[idx];
+    private handleBoardChanged(newCellValue: CellValue, idx: number): void {
+        const cell = this.cells[idx]
         if (cell.value !== newCellValue) {
             this.renderCell(cell.display.x, cell.display.y, newCellValue)
             cell.value = newCellValue
         }
     }
 
-    private renderCell(x: number, y: number, value: CellValue) {
+    private renderCell(x: number, y: number, value: CellValue): void {
         if (value === CellValue.X) {
             this.add.star(x, y, 4, 4, 64, 0xff0000)
                 .setAngle(45)
         } else if (value === CellValue.O) {
             this.add.circle(x, y, 50, 0x0000ff)
+        }
+    }
+
+    private handlePlayerTurnChanged(newPlayerIdx: number, oldPlayerIdx: number): void {
+        // TODO show message to player to indicate it is his turn
+    }
+
+    private handlePlayerWin(playerIdx: number): void {
+        if (this.roomClient?.playerIndex === playerIdx) {
+            console.log('Congratulations!')
+        } else {
+            console.log('Game over!')
         }
     }
 }

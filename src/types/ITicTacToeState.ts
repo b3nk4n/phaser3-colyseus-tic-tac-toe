@@ -1,7 +1,7 @@
-import { Schema, ArraySchema } from "@colyseus/schema";
+import { Schema, ArraySchema } from "@colyseus/schema"
 
 export enum CellValue {
-    Empty,
+    Empty = -1,
     X,
     O
 }

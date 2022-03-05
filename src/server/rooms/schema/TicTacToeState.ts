@@ -1,20 +1,24 @@
 import { Schema, ArraySchema, type } from '@colyseus/schema'
-import ITicTacToeState from '~/types/ITicTacToeState';
+import ITicTacToeState from '~/types/ITicTacToeState'
+import { CellValue } from '../../../types/ITicTacToeState'
 
 export default class TicTacToeState extends Schema implements ITicTacToeState {
     @type('number')
-    activePlayer: number = 0;
+    activePlayer: number = 0
+
+    @type('number')
+    winningPlayer: number = -1
 
     @type(['number'])
-    board: ArraySchema<number> // works because enums are also just numbers
+    board: ArraySchema<number>
 
     constructor() {
-        super();
+        super()
 
         this.board = new ArraySchema<number>(
-            0, 0, 0,
-            0, 0, 0,
-            0, 0, 0
+            CellValue.Empty, CellValue.Empty, CellValue.Empty,
+            CellValue.Empty, CellValue.Empty, CellValue.Empty,
+            CellValue.Empty, CellValue.Empty, CellValue.Empty
         )
     }
 }

@@ -1,11 +1,11 @@
-import {Client, Room} from 'colyseus'
-import {Dispatcher} from '@colyseus/command'
+import { Client, Room } from 'colyseus'
+import { Dispatcher } from '@colyseus/command'
 
-import TicTacToeState from './schema/TicTacToeState'
-import { Message } from '../../types/messages'
 import PlayerSelectionCommand from '../commands/PlayerSelectionCommand'
 import CheckWinnerCommand from '../commands/CheckWinnerCommand'
 import { GameState } from '../../types/ITicTacToeState'
+import TicTacToeState from './schema/TicTacToeState'
+import { Message } from '../../types/messages'
 
 export class TicTacToeRoom extends Room<TicTacToeState> {
     private dispatcher = new Dispatcher(this)
@@ -24,7 +24,7 @@ export class TicTacToeRoom extends Room<TicTacToeState> {
         })
     }
 
-    onJoin(client: Client, options: any, auth: any) {
+    async onJoin(client: Client, options: any, auth: any) {
         console.log(client.sessionId, "joined!")
 
         const playerIndex = this.clients.findIndex(c => c.sessionId === client.sessionId)
@@ -32,7 +32,7 @@ export class TicTacToeRoom extends Room<TicTacToeState> {
 
         if (this.clients.length >= 2) {
             this.state.gameState = GameState.Playing
-            this.lock()
+            await this.lock()
         }
     }
 

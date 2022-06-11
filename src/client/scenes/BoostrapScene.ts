@@ -1,9 +1,9 @@
 import Phaser from 'phaser'
 
-import RoomClient from '../services/RoomClient'
+import GameOverScene from '../../client/scenes/GameOverScene'
 import { IGameOverSceneData } from '../../types/scenes'
 import GameScene from '../../client/scenes/GameScene'
-import GameOverScene from '../../client/scenes/GameOverScene'
+import RoomClient from '../services/RoomClient'
 
 export default class BoostrapScene extends Phaser.Scene {
     private static readonly KEY = 'bootstrap'

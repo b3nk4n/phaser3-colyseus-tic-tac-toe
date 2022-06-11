@@ -1,9 +1,9 @@
 import Phaser from 'phaser'
 
-import type RoomClient from '../services/RoomClient'
 import ITicTacToeState, { GameState } from '../../types/ITicTacToeState'
 import { IGameOverSceneData, IGameSceneData } from '../../types/scenes'
 import { CellValue } from '../../types/ITicTacToeState'
+import type RoomClient from '../services/RoomClient'
 
 export default class GameScene extends Phaser.Scene {
     public static readonly KEY = 'game'
@@ -33,7 +33,7 @@ export default class GameScene extends Phaser.Scene {
             throw new Error('Server connection is not available')
         }
 
-        this.roomClient.join()
+        await this.roomClient.join()
 
         this.roomClient.onStateInitialized(this.createBoard, this)
     }

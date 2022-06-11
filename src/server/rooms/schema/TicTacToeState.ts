@@ -1,6 +1,6 @@
-import {ArraySchema, Schema, type} from '@colyseus/schema'
-import ITicTacToeState from '~/types/ITicTacToeState'
 import { CellValue, GameState } from '../../../types/ITicTacToeState'
+import { ArraySchema, Schema, type } from '@colyseus/schema'
+import ITicTacToeState from '~/types/ITicTacToeState'
 
 export default class TicTacToeState extends Schema implements ITicTacToeState {
     @type('number')
